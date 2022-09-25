@@ -1,5 +1,21 @@
 import React, { useEffect, useState, useCallback } from 'react';
+
 import {
+  Card,
+  CardTitle,
+  CardSubtitle,
+  CardContent,
+  CardActions,
+  CardHeader,
+} from "@react-md/card";
+import { Button } from "@react-md/button";
+import { Typography } from "@react-md/typography";
+import { TextIconSpacing } from "@react-md/icon";
+import {
+  PlayArrowSVGIcon,
+  PauseSVGIcon,
+  UndoSVGIcon,
+  ReplaySVGIcon,
   ArrowUpwardSVGIcon,
   ArrowDownwardSVGIcon,
 } from '@react-md/material-icons';
@@ -22,7 +38,6 @@ const Timer = () => {
   const [countdownTime, setCountdownTime] = useState<number>(defaultTimer);
   const [intervalTime, setIntervalTime] = useState<number>(defaultTimer);
   const [isCountingDown, setIsCountingDown] = useState<boolean>(false);
-  // const isCountingDown = !!timerId;
 
   const handleReset = useCallback(() => {
     clearInterval(timerId);
@@ -51,15 +66,8 @@ const Timer = () => {
       console.log(timerId, countdownTime, nextTime);
       setCountdownTime((prev) => {
         const nextTime = prev - 1;
-        // if (!nextTime) {
-        //   handleReset();
-        // }
         return nextTime || 0;
       });
-      // });
-      // if (!nextTime) {
-      //   handleReset();
-      // }
     }, 1000);
     setTimerId(intervalId);
   };
@@ -72,27 +80,44 @@ const Timer = () => {
 
   console.log(timerId, countdownTime);
   return (
-    <div className='App'>
-      <h1>Session Timer</h1>
-      <ArrowUpwardSVGIcon
-        id='session-increment'
-        onClick={() => handleAdjustInterval(1)}
-      />
-      <h3 id='session-length'>{intervalTime / 60}</h3>
-      <ArrowDownwardSVGIcon
-        id='session-decrement'
-        onClick={() => handleAdjustInterval(-1)}
-      />
-      <h2 id='timer-label'>Session: </h2>
-      {displayTime(countdownTime)}
-      <button id='start-stop' onClick={handleStartStop}>
-        Start/Stop
-      </button>
-      <button id='reset-button' onClick={handleReset}>
-        Reset
-      </button>
-      <span>{isCountingDown ? 'STARTED' : 'STOPPED'}</span>
-    </div>
+      <Card raisable>
+        <CardHeader>
+          <CardActions>
+          <CardTitle>
+            {displayTime(countdownTime)}
+          </CardTitle>
+          <Button theme="primary" onClick={handleStartStop}>
+            <TextIconSpacing icon={isCountingDown ? <PauseSVGIcon /> : <PlayArrowSVGIcon />}>
+              {isCountingDown ? 'Stop' : 'Start'}
+            </TextIconSpacing>
+          </Button>
+          <Button onClick={handleReset}>
+            <TextIconSpacing icon={<ReplaySVGIcon/>}>
+              Reset
+            </TextIconSpacing>
+          </Button>
+        </CardActions>
+        </CardHeader>
+        <CardContent>
+          <Typography>
+            Press start to begin a timer. Use the buttons at the bottom right to add or remove minutes from the timer
+          </Typography>
+        </CardContent>
+        <CardActions>
+          <CardSubtitle>Interval: {intervalTime / 60}:00</CardSubtitle>
+          <Button theme="secondary" onClick={() => handleAdjustInterval(1)}>
+            <TextIconSpacing icon={<ArrowUpwardSVGIcon/>}>
+              Increment
+            </TextIconSpacing>
+          </Button>
+          <Button theme="secondary" onClick={() => handleAdjustInterval(-1)}>
+            <TextIconSpacing icon={<ArrowDownwardSVGIcon/>}>
+
+              Decriment
+            </TextIconSpacing>
+          </Button>
+        </CardActions>
+      </Card>
   );
 }
 

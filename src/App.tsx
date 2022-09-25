@@ -1,36 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  ArrowDropUpSVGIcon,
-  ArrowDropDownSVGIcon,
+  ArrowUpwardSVGIcon,
+  ArrowDownwardSVGIcon,
 } from '@react-md/material-icons';
 
 function App() {
-  const [breakLength, setBreakLength] = useState(5);
-  const [sessionLength, setSessionLength] = useState(25);
-  const [isCountingDown, setIsCountingDown] = useState(false);
+  const defaultTimer = { break: 5, session: 25 };
+  const [timerId, setTimerId] = useState<NodeJS.Timer | undefined>();
+  const [countdownTime, setCountdownTime] = useState<number>(25);
+  const [intervalTime, setIntervalTime] = useState<number>(25);
 
-  const handleBreakIncrement = (e: React.MouseEvent<SVGElement>) => {
-    if (!isCountingDown) {
-      setBreakLength(breakLength + 1);
-    }
+  const handleReset = () => {
+    clearInterval(timerId);
+    setTimerId(undefined);
   };
 
-  const handleBreakDecrement = (e: React.MouseEvent<SVGElement>) => {
-    if (!isCountingDown) {
-      setBreakLength(breakLength < 2 ? 1 : breakLength - 1);
-    }
+  const handleAdjustInterval = (adjustment: number = 1) => {
+    //interval adjustments are in minutes; adds/subtracts 60 seconds from timer
+    setIntervalTime(intervalTime + adjustment * 60);
   };
 
-  const handleSessionIncrement = (e: React.MouseEvent<SVGElement>) => {
-    if (!isCountingDown) {
-      setSessionLength(sessionLength + 1);
+  const handleStartStop = () => {
+    if (timerId) {
+      return clearInterval(timerId);
     }
-  };
-
-  const handleSessionDecrement = (e: React.MouseEvent<SVGElement>) => {
-    if (!isCountingDown) {
-      setSessionLength(sessionLength < 2 ? 1 : sessionLength - 1);
-    }
+    const intervalId = setInterval(() => {
+      const nextTime = countdownTime - 1;
+      setCountdownTime(nextTime);
+      if (!nextTime) {
+        handleReset();
+      }
+    }, 1000);
+    setTimerId(intervalId);
   };
 
   return (
@@ -38,27 +39,37 @@ function App() {
       <h1>Session Timer</h1>
       <h4 id='break-label'>Break Length</h4>
       <h4 id='session-label'>Session Length</h4>
-      <ArrowDropUpSVGIcon id='break-increment' onClick={handleBreakIncrement} />
-      <h3 id='break-length'>5</h3>
-      <ArrowDropDownSVGIcon
+      <ArrowUpwardSVGIcon
+        id='break-increment'
+        onClick={() => handleAdjustInterval(1)}
+      />
+      <h3 id='break-length'>{breakMinutes}</h3>
+      <ArrowDownwardSVGIcon
         id='break-decrement'
         onClick={handleBreakDecrement}
       />
-      <ArrowDropUpSVGIcon
+      <ArrowUpwardSVGIcon
         id='session-increment'
         onClick={handleSessionIncrement}
       />
-      <h3 id='session-length'>25</h3>
-      <ArrowDropDownSVGIcon
+      <h3 id='session-length'>{sessionMinutes}</h3>
+      <ArrowDownwardSVGIcon
         id='session-decrement'
         onClick={handleSessionDecrement}
       />
-      <h3>
-        <h2 id='timer-label'>Session</h2>
-        <h1 id='time-left'>25:00</h1>
-      </h3>
-      <button>Start/Stop</button>
-      <button>Reset</button>
+      <h2 id='timer-label'>Session: </h2>
+      <>
+        {!timerId ? null : Math.floor(countdownTime / 60)}:
+        {countdownTime - Math.floor(countdownTime / 60) * 60 < 10
+          ? `0${countdownTime - Math.floor(countdownTime / 60)}`
+          : countdownTime - Math.floor(countdownTime / 60)}
+      </>
+      <button id='start-stop' onClick={handleStartStop}>
+        Start/Stop
+      </button>
+      <button id='reset-button' onClick={handleReset}>
+        Reset
+      </button>
     </div>
   );
 }

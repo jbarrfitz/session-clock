@@ -13,11 +13,14 @@ const App = () => {
     return (
         <Configuration>
 
-        <Grid padding={0} columns={1}>
+        <Grid padding={50} columns={1}>
+            <div style={{ margin: 'auto', maxWidth: 600 }}>
+
             <AppBar>
                 <AppBarTitle>Countdown Timer</AppBarTitle>
             </AppBar>
             <Timer />
+            </div>
         </Grid>
         </Configuration>
     )

@@ -1,69 +1,84 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   ArrowUpwardSVGIcon,
   ArrowDownwardSVGIcon,
 } from '@react-md/material-icons';
 
 function App() {
-  const defaultTimer = { break: 5, session: 25 };
+  const defaultTimer = 25 * 60;
   const [timerId, setTimerId] = useState<NodeJS.Timer | undefined>();
-  const [countdownTime, setCountdownTime] = useState<number>(25);
-  const [intervalTime, setIntervalTime] = useState<number>(25);
+  const [countdownTime, setCountdownTime] = useState<number>(defaultTimer);
+  const [intervalTime, setIntervalTime] = useState<number>(defaultTimer);
+  const [isCountingDown, setIsCountingDown] = useState<boolean>(false);
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     clearInterval(timerId);
     setTimerId(undefined);
+    setCountdownTime(intervalTime);
+  }, [timerId, intervalTime]);
+
+  const displayTime = (time: number) => {
+    let date = new Date(0);
+    date.setSeconds(countdownTime);
+    return (
+      <h2>
+        {date.getMinutes()}:
+        {date.getSeconds() < 10 ? `0${date.getSeconds()}` : date.getSeconds()}
+      </h2>
+    );
   };
 
   const handleAdjustInterval = (adjustment: number = 1) => {
     //interval adjustments are in minutes; adds/subtracts 60 seconds from timer
-    setIntervalTime(intervalTime + adjustment * 60);
+    if (!isCountingDown) {
+      setIntervalTime(intervalTime + adjustment * 60);
+    }
   };
 
   const handleStartStop = () => {
+    setIsCountingDown((prev) => !prev);
     if (timerId) {
       return clearInterval(timerId);
     }
     const intervalId = setInterval(() => {
       const nextTime = countdownTime - 1;
-      setCountdownTime(nextTime);
-      if (!nextTime) {
-        handleReset();
-      }
+      console.log(timerId, countdownTime, nextTime);
+      setCountdownTime((prev) => {
+        const nextTime = prev - 1;
+        // if (!nextTime) {
+        //   handleReset();
+        // }
+        return nextTime || 0;
+      });
+      // });
+      // if (!nextTime) {
+      //   handleReset();
+      // }
     }, 1000);
     setTimerId(intervalId);
   };
 
+  useEffect(() => {
+    if (timerId && !countdownTime) {
+      handleReset();
+    }
+  }, [timerId, countdownTime, handleReset]);
+
+  console.log(timerId, countdownTime);
   return (
     <div className='App'>
       <h1>Session Timer</h1>
-      <h4 id='break-label'>Break Length</h4>
-      <h4 id='session-label'>Session Length</h4>
-      <ArrowUpwardSVGIcon
-        id='break-increment'
-        onClick={() => handleAdjustInterval(1)}
-      />
-      <h3 id='break-length'>{breakMinutes}</h3>
-      <ArrowDownwardSVGIcon
-        id='break-decrement'
-        onClick={handleBreakDecrement}
-      />
       <ArrowUpwardSVGIcon
         id='session-increment'
-        onClick={handleSessionIncrement}
+        onClick={() => handleAdjustInterval(1)}
       />
-      <h3 id='session-length'>{sessionMinutes}</h3>
+      <h3 id='session-length'>{intervalTime / 60}</h3>
       <ArrowDownwardSVGIcon
         id='session-decrement'
-        onClick={handleSessionDecrement}
+        onClick={() => handleAdjustInterval(-1)}
       />
       <h2 id='timer-label'>Session: </h2>
-      <>
-        {!timerId ? null : Math.floor(countdownTime / 60)}:
-        {countdownTime - Math.floor(countdownTime / 60) * 60 < 10
-          ? `0${countdownTime - Math.floor(countdownTime / 60)}`
-          : countdownTime - Math.floor(countdownTime / 60)}
-      </>
+      {displayTime(countdownTime)}
       <button id='start-stop' onClick={handleStartStop}>
         Start/Stop
       </button>

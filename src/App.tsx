@@ -4,29 +4,32 @@ import {
   ArrowDownwardSVGIcon,
 } from '@react-md/material-icons';
 
+/** TODO: Move to a /utils.ts */
+const displayTime = (time: number) => {
+  let date = new Date(0);
+  date.setSeconds(time);
+  return (
+    <h2>
+      {date.getMinutes()}:
+      {date.getSeconds() < 10 ? `0${date.getSeconds()}` : date.getSeconds()}
+    </h2>
+  );
+};
+
 function App() {
   const defaultTimer = 25 * 60;
   const [timerId, setTimerId] = useState<NodeJS.Timer | undefined>();
   const [countdownTime, setCountdownTime] = useState<number>(defaultTimer);
   const [intervalTime, setIntervalTime] = useState<number>(defaultTimer);
   const [isCountingDown, setIsCountingDown] = useState<boolean>(false);
+  // const isCountingDown = !!timerId;
 
   const handleReset = useCallback(() => {
     clearInterval(timerId);
     setTimerId(undefined);
     setCountdownTime(intervalTime);
+    setIsCountingDown(false);
   }, [timerId, intervalTime]);
-
-  const displayTime = (time: number) => {
-    let date = new Date(0);
-    date.setSeconds(countdownTime);
-    return (
-      <h2>
-        {date.getMinutes()}:
-        {date.getSeconds() < 10 ? `0${date.getSeconds()}` : date.getSeconds()}
-      </h2>
-    );
-  };
 
   const handleAdjustInterval = (adjustment: number = 1) => {
     //interval adjustments are in minutes; adds/subtracts 60 seconds from timer
@@ -37,8 +40,11 @@ function App() {
 
   const handleStartStop = () => {
     setIsCountingDown((prev) => !prev);
+    console.log('handleStartStop', { timerId, isCountingDown, intervalTime });
     if (timerId) {
-      return clearInterval(timerId);
+      console.log('Clear interval');
+      clearInterval(timerId);
+      setTimerId(undefined);
     }
     const intervalId = setInterval(() => {
       const nextTime = countdownTime - 1;
@@ -85,6 +91,7 @@ function App() {
       <button id='reset-button' onClick={handleReset}>
         Reset
       </button>
+      <span>{isCountingDown ? 'STARTED' : 'STOPPED'}</span>
     </div>
   );
 }

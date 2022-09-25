@@ -49,11 +49,12 @@ const Timer = () => {
     }
   };
 
-  const handleStartStop = () => {
+  const handleStartStop = useCallback(() => {
     setIsCountingDown((prev) => !prev);
     if (timerId) {
       clearInterval(timerId);
       setTimerId(undefined);
+      return;
     }
     const intervalId = setInterval(() => {
       setCountdownTime((prev) => {
@@ -62,7 +63,7 @@ const Timer = () => {
       });
     }, 1000);
     setTimerId(intervalId);
-  };
+  }, [timerId]);
 
   useEffect(() => {
     if (timerId && !countdownTime) {

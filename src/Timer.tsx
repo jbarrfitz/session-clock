@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from "react";
 
 import {
   Card,
@@ -21,9 +21,9 @@ import {
   ReplaySVGIcon,
   ArrowUpwardSVGIcon,
   ArrowDownwardSVGIcon,
-} from '@react-md/material-icons';
+} from "@react-md/material-icons";
 
-import { displayTime } from './utils';
+import { displayTime } from "./utils";
 
 const Timer = () => {
   const defaultTimer = 25 * 60;
@@ -43,9 +43,9 @@ const Timer = () => {
   const handleAdjustInterval = (adjustment: number = 1) => {
     //interval adjustments are in minutes; adds/subtracts 60 seconds from timer
     if (!isCountingDown) {
-      const nextInterval = intervalTime + adjustment * 60
+      const nextInterval = intervalTime + adjustment * 60;
       setIntervalTime(nextInterval);
-      setCountdownTime(nextInterval)
+      setCountdownTime(nextInterval);
     }
   };
 
@@ -71,44 +71,51 @@ const Timer = () => {
   }, [timerId, countdownTime, handleReset]);
 
   return (
-      <Card raisable>
-        <CardHeader>
-          <CardActions style={{ justifyContent: 'space-between' }}>
+    <Card raisable>
+      <CardHeader>
+        <CardActions style={{ justifyContent: "space-between" }}>
           <CardTitle>
             <h2>
-            <TextIconSpacing icon={<TimerSVGIcon />}>
-              {displayTime(countdownTime)}
-            </TextIconSpacing>
+              <TextIconSpacing icon={<TimerSVGIcon />}>
+                {displayTime(countdownTime)}
+              </TextIconSpacing>
             </h2>
           </CardTitle>
           <div>
             <Button onClick={handleReset}>
-              <TextIconSpacing icon={<ReplaySVGIcon/>}>
-                Reset
-              </TextIconSpacing>
+              <TextIconSpacing icon={<ReplaySVGIcon />}>Reset</TextIconSpacing>
             </Button>
-            <Button theme="primary" themeType="contained" onClick={handleStartStop}>
-              <TextIconSpacing icon={isCountingDown ? <PauseSVGIcon /> : <PlayArrowSVGIcon />}>
-                {isCountingDown ? 'Stop' : 'Start'}
+            <Button
+              theme="primary"
+              themeType="contained"
+              onClick={handleStartStop}
+            >
+              <TextIconSpacing
+                icon={isCountingDown ? <PauseSVGIcon /> : <PlayArrowSVGIcon />}
+              >
+                {isCountingDown ? "Stop" : "Start"}
               </TextIconSpacing>
             </Button>
           </div>
         </CardActions>
-        </CardHeader>
-        <CardContent>
-          <Typography>
-            Press start to begin a timer. Use the buttons at the bottom right to add or remove minutes from the timer
-          </Typography>
-          <CardSubtitle>Adjust duration:</CardSubtitle>
-        <CardActions style={{ justifyContent: 'space-between' }}>
-            <Button theme="secondary" onClick={() => handleAdjustInterval(-step)} 
-            disabled={isCountingDown}>
-              <TextIconSpacing icon={<RemoveSVGIcon/>}>
-
-                {`${step}m`}
-              </TextIconSpacing>
-            </Button>
-            <Slider
+      </CardHeader>
+      <CardContent>
+        <Typography>
+          Press start to begin a timer. Use the buttons at the bottom right to
+          add or remove minutes from the timer
+        </Typography>
+        <CardSubtitle>Adjust duration:</CardSubtitle>
+        <CardActions style={{ justifyContent: "space-between" }}>
+          <Button
+            theme="secondary"
+            onClick={() => handleAdjustInterval(-step)}
+            disabled={isCountingDown}
+          >
+            <TextIconSpacing icon={<RemoveSVGIcon />}>
+              {`${step}m`}
+            </TextIconSpacing>
+          </Button>
+          <Slider
             style={{ flexGrow: 1 }}
             baseId="step"
             discrete
@@ -116,17 +123,20 @@ const Timer = () => {
             // afterAddon={<AddSVGIcon onClick={() => !isCountingDown && step < stepControls.max && stepControls.setValue(step + 1)} />}
             {...stepControls}
             disabled={isCountingDown}
-            />
-            <Button theme="secondary" onClick={() => handleAdjustInterval(step)} 
-            disabled={isCountingDown}>
-              <TextIconSpacing icon={<AddSVGIcon/>}>
-                {`${step}m`}
-              </TextIconSpacing>
-            </Button>
+          />
+          <Button
+            theme="secondary"
+            onClick={() => handleAdjustInterval(step)}
+            disabled={isCountingDown}
+          >
+            <TextIconSpacing icon={<AddSVGIcon />}>
+              {`${step}m`}
+            </TextIconSpacing>
+          </Button>
         </CardActions>
-        </CardContent>
-      </Card>
+      </CardContent>
+    </Card>
   );
-}
+};
 
 export default Timer;

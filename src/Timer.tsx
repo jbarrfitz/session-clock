@@ -19,8 +19,6 @@ import {
   AddSVGIcon,
   RemoveSVGIcon,
   ReplaySVGIcon,
-  ArrowUpwardSVGIcon,
-  ArrowDownwardSVGIcon,
 } from "@react-md/material-icons";
 
 import { displayTime } from "./utils";
@@ -110,7 +108,7 @@ const Timer = () => {
           <Button
             theme="secondary"
             onClick={() => handleAdjustInterval(-step)}
-            disabled={isCountingDown}
+            disabled={isCountingDown || intervalTime - step * 60 <= 0}
           >
             <TextIconSpacing icon={<RemoveSVGIcon />}>
               {`${step}m`}
@@ -128,7 +126,9 @@ const Timer = () => {
           <Button
             theme="secondary"
             onClick={() => handleAdjustInterval(step)}
-            disabled={isCountingDown}
+            disabled={
+              isCountingDown || intervalTime + step * 60 >= 24 * 60 * 60 - 1
+            }
           >
             <TextIconSpacing icon={<AddSVGIcon />}>
               {`${step}m`}
